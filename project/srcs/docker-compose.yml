@@ -6,20 +6,24 @@ services:
       context: .
       dockerfile: requirements/nginx/Dockerfile
     container_name: nginx
-   depends_on:
+    depends_on:
      - wordpress
     ports:
       - "443:443"
+    networks:
+      - inception
     volumes:
       - ./requirements/nginx/conf/:/etc/nginx/http.d/
       - ./requirements/nginx/tools:/etc/nginx/ssl/
-      - /home/${USER}/simple_docker_nginx_html/public/html:/var/www/
+      - wp-volume:/var/www/
+    env_file:
+      - .env
     restart: always
 
   mariadb:
     build:
-      context: ./requirements/mariadb
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: requirements/mariadb/Dockerfile
       args:
         DB_NAME: ${DB_NAME}
         DB_USER: ${DB_USER}
@@ -28,8 +32,12 @@ services:
     container_name: mariadb
     ports:
       - "3306:3306"
+    networks:
+      - inception
     volumes:
       - db-volume:/var/lib/mysql
+    env_file:
+      - .env
     restart: always
 
   wordpress:
@@ -44,6 +52,8 @@ services:
     depends_on:
       - mariadb
     restart: always
+    env_file:
+      .env
     volumes:
       - wp-volume:/var/www/
 
