@@ -14,7 +14,6 @@ services:
       - inception
     volumes:
       - ./requirements/nginx/conf/:/etc/nginx/http.d/
-      - ./requirements/nginx/tools:/etc/nginx/ssl/
       - wp-volume:/var/www/
     env_file:
       - .env
@@ -52,6 +51,8 @@ services:
     depends_on:
       - mariadb
     restart: always
+    networks:
+      - inception
     env_file:
       .env
     volumes:

@@ -1,5 +1,6 @@
 FROM alpine:3.20
-ARG PHP_VERSION=8 \
+
+ARG PHP_VERSION=83 \
     DB_NAME \
     DB_USER \
     DB_PASS
@@ -32,13 +33,11 @@ RUN wget https://wordpress.org/latest.zip && \
 	cp -rf wordpress/* . && \
 	rm -rf wordpress latest.zip
 COPY ./requirements/wordpress/conf/wp-config-create.sh .
-RUN sh wp-config-create.sh && rm wp-config-create.sh && \
-	chmod -R 777 wp-content/
-    RUN apk add php php-json php-phar php-mbstring php-iconv
-    RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-    RUN chmod +x wp-cli.phar
-    RUN mv wp-cli.phar /usr/local/bin/wp
-    
-    COPY ./requirements/wordpress/conf/user.sh ..
-    RUN chmod 777 ../user.sh
-    ENTRYPOINT sh ../user.sh
+RUN sh wp-config-create.sh && rm wp-config-create.sh && chmod -R 0777 wp-content/
+RUN apk add php php-json php-phar php-mbstring php-iconv
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+RUN chmod +x wp-cli.phar
+RUN mv wp-cli.phar /usr/local/bin/wp
+COPY ./requirements/wordpress/conf/user.sh ..
+RUN chmod 777 ../user.sh
+ENTRYPOINT sh ../user.sh
